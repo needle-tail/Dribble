@@ -2,7 +2,7 @@ import Crypto
 import NIO
 import NIOFoundationCompat
 
-enum StunError: Error {
+public enum StunError: Error {
     case invalidAttributeFormat, invalidPacket, unsupported, invalidResponse, unknownAttribute
 }
 
@@ -105,7 +105,7 @@ public struct StunParser: ByteToMessageDecoder {
 public struct StunTransactionId: Hashable {
     internal var bytes: [UInt8]
     
-    init(bytes: [UInt8]) {
+    public init(bytes: [UInt8]) {
         assert(bytes.count == 12)
         self.bytes = bytes
     }
@@ -122,16 +122,16 @@ public struct StunTransactionId: Hashable {
 }
 
 public struct StunMessageHeader {
-    static let cookieArray: [UInt8] = [0x21, 0x12, 0xA4, 0x42]
-    static let cookieHighBits: UInt16 = 0x2112
-    static let cookie: UInt32 = 0x2112A442
+    public static let cookieArray: [UInt8] = [0x21, 0x12, 0xA4, 0x42]
+    public static let cookieHighBits: UInt16 = 0x2112
+    public static let cookie: UInt32 = 0x2112A442
     
     public let type: StunMessageType
     
     /// Length of the body, not including this 20 byte header
     var length: UInt16
     
-    var cookie: UInt32 { Self.cookie }
+    public var cookie: UInt32 { Self.cookie }
     public let transactionId: StunTransactionId
 }
 
@@ -229,6 +229,7 @@ public enum ResolvedStunAttribute {
         buffer: inout ByteBuffer
     ) throws {
         func parseXorAddress() throws -> SocketAddress {
+
             guard
                 buffer.readInteger(as: UInt8.self) == 0,
                 let familyType: UInt8 = buffer.readInteger(),
@@ -407,7 +408,7 @@ public struct StunAttribute {
     }
     public internal(set) var value: ByteBuffer
     
-    init(
+    public init(
         type: UInt16,
         value: ByteBuffer
     ) {
@@ -415,7 +416,7 @@ public struct StunAttribute {
         self.value = value
     }
     
-    init(
+    public init(
         type: StunAttributeType,
         value: ByteBuffer
     ) {
@@ -505,7 +506,7 @@ public struct StunMessage {
         provideSHA1Integrity(with: &hmac)
     }
 
-    init(
+    public init(
         type: StunMessageType,
         transactionId: StunTransactionId = .init(),
         attributes: [StunAttribute]
@@ -584,7 +585,7 @@ extension ByteBuffer {
         }
     }
     
-    mutating func writeStunMessage(_ message: StunMessage) {
+    public mutating func writeStunMessage(_ message: StunMessage) {
         reserveCapacity(writerIndex + 20 + message.body.readableBytes)
         writeInteger(message.header.type.rawValue)
         writeInteger(message.header.length)

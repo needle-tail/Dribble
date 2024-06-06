@@ -20,7 +20,6 @@ final class StunInboundHandler: ChannelInboundHandler, StunMessageSender {
     
     public func channelRead(context: ChannelHandlerContext, data: NIOAny) {
         let message = self.unwrapInboundIn(data)
-        
         if message.header.type == .dataIndication {
             do {
                 if
